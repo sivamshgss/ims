@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - include:
+      file: changes/001-create-users-organizations.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changes/002-create-customers-items.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changes/003-create-invoices.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changes/004-create-invoice-items.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changes/005-create-payments.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changes/006-add-data-validation-constraints.yaml
+      relativeToChangelogFile: true

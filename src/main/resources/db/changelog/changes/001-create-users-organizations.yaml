@@ -1,0 +1,81 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20261009-01
+      author: sivamshgss
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: username
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: password_hash
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+        - createTable:
+            tableName: organizations
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: VARCHAR(150)
+                  constraints:
+                    nullable: false
+
+        - createTable:
+            tableName: user_organization
+            columns:
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: organization_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: role
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+
+        - addPrimaryKey:
+            tableName: user_organization
+            columnNames: user_id, organization_id
+            constraintName: pk_user_organization
+
+        - addForeignKeyConstraint:
+            baseTableName: user_organization
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_user_organization_user
+
+        - addForeignKeyConstraint:
+            baseTableName: user_organization
+            baseColumnNames: organization_id
+            referencedTableName: organizations
+            referencedColumnNames: id
+            constraintName: fk_user_organization_organization
+
+        - sql:
+            sql: "ALTER TABLE user_organization ADD CONSTRAINT chk_user_organization_role CHECK (role IN ('ADMIN', 'USER'))"

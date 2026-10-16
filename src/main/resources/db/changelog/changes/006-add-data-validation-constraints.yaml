@@ -1,0 +1,104 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20261016-01
+      author: sivamshgss
+      changes:
+
+#        some constraints and indices have been added already in 001, 002 and 003
+
+#        Customers: unique (organization_id, id) to create composite FK from invoice for data integrity
+
+        - addUniqueConstraint:
+            tableName: customers
+            columnNames: organization_id, id
+            constraintName: uq_customers_organization_customer
+
+#        Items: prevent negative prices and invalid tax rates (0 - 100)
+
+        - sql:
+            sql: "ALTER TABLE items ADD CONSTRAINT chk_items_price CHECK (price >= 0)"
+
+        - sql:
+            sql: "ALTER TABLE items ADD CONSTRAINT chk_items_tax_rate CHECK (tax_rate BETWEEN 0 AND 100)"
+
+#        Invoices: prevent negative values for subtotal, total_tax, total and amount_paid;
+#                  check total = subtotal + total_tax, unique (organization_id and invoice_number),
+#                  drop existing FK and add FK to customers as mentioned in customers change above,
+#                  check amount_paid <= total
+
+        - sql:
+            sql: "ALTER TABLE invoices ADD CONSTRAINT chk_invoices_subtotal CHECK (subtotal >= 0)"
+
+        - sql:
+            sql: "ALTER TABLE invoices ADD CONSTRAINT chk_invoices_total_tax CHECK (total_tax >= 0)"
+
+        - sql:
+            sql: "ALTER TABLE invoices ADD CONSTRAINT chk_invoices_total CHECK (total >= 0)"
+
+        - sql:
+            sql: "ALTER TABLE invoices ADD CONSTRAINT chk_invoices_amount_paid CHECK (amount_paid >= 0)"
+
+        - sql:
+            sql: "ALTER TABLE invoices ADD CONSTRAINT chk_invoices_total_calculation CHECK (total = subtotal + total_tax)"
+
+        - sql:
+            sql: "ALTER TABLE invoices ADD CONSTRAINT chk_invoices_amount_paid_limit CHECK (amount_paid <= total)"
+
+        - addUniqueConstraint:
+            tableName: invoices
+            columnNames: organization_id, invoice_number
+            constraintName: uq_invoices_organization_invoice_number
+
+        - dropForeignKeyConstraint:
+            baseTableName: invoices
+            constraintName: fk_invoices_customers
+
+        - addForeignKeyConstraint:
+            baseTableName: invoices
+            baseColumnNames: organization_id, customer_id
+            referencedTableName: customers
+            referencedColumnNames: organization_id, id
+            constraintName: fk_invoices_customers
+
+#        invoice_items: prevent negative values for quantity (>0), unit_price, subtotal, tax_amount and total;
+#                       check total = subtotal + tax_amount and invalid tax rates (0 - 100), index on item_id
+
+        - sql:
+            sql: "ALTER TABLE invoice_items ADD CONSTRAINT chk_invoice_items_quantity CHECK (quantity > 0)"
+
+        - sql:
+            sql: "ALTER TABLE invoice_items ADD CONSTRAINT chk_invoice_items_unit_price CHECK (unit_price >= 0)"
+
+        - sql:
+            sql: "ALTER TABLE invoice_items ADD CONSTRAINT chk_invoice_items_subtotal CHECK (subtotal >= 0)"
+
+        - sql:
+            sql: "ALTER TABLE invoice_items ADD CONSTRAINT chk_invoice_items_tax_amount CHECK (tax_amount >= 0)"
+
+        - sql:
+            sql: "ALTER TABLE invoice_items ADD CONSTRAINT chk_invoice_items_total CHECK (total >= 0)"
+
+        - sql:
+            sql: "ALTER TABLE invoice_items ADD CONSTRAINT chk_invoice_items_tax_rate CHECK (tax_rate BETWEEN 0 AND 100)"
+
+        - sql:
+            sql: "ALTER TABLE invoice_items ADD CONSTRAINT chk_invoice_items_total_calculation CHECK (total = subtotal + tax_amount)"
+
+        - createIndex:
+            tableName: invoice_items
+            indexName: idx_invoice_items_item_id
+            columns:
+              - column:
+                  name: item_id
+
+#        Payments: only allow positive amounts and index on invoice_id
+
+        - sql:
+            sql: "ALTER TABLE payments ADD CONSTRAINT chk_payments_amount CHECK (amount > 0)"
+
+        - createIndex:
+            tableName: payments
+            indexName: idx_payments_invoice_id
+            columns:
+                - column:
+                    name: invoice_id
