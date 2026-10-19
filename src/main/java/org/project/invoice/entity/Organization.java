@@ -18,4 +18,7 @@ public class Organization {
 
     @OneToMany(mappedBy = "organization")
     private List<UserOrganization> memberships = new ArrayList<>();
+
+    @OneToMany(mappedBy = "organization")
+    private List<Customer> customers = new ArrayList<>();
 }
