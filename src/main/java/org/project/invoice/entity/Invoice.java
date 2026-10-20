@@ -51,4 +51,7 @@ public class Invoice {
 
     @OneToMany(mappedBy = "invoice")
     private List<InvoiceItem> invoiceItems = new ArrayList<>();
+
+    @OneToMany(mappedBy = "invoice")
+    private List<Payment> payments = new ArrayList<>();
 }
