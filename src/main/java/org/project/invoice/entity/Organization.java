@@ -24,4 +24,10 @@ public class Organization {
 
     @OneToMany(mappedBy = "organization")
     private List<Item> items = new ArrayList<>();
+
+    @OneToMany(mappedBy = "organization")
+    private List<Invoice> invoices = new ArrayList<>();
+
+    @OneToOne(mappedBy = "organization")
+    private InvoiceSequence invoiceSequence;
 }

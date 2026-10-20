@@ -2,6 +2,9 @@ package org.project.invoice.entity;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "customers")
 public class Customer {
@@ -24,4 +27,7 @@ public class Customer {
     private String phone;
 
     private String address;
+
+    @OneToMany(mappedBy = "customer")
+    private List<Invoice> invoices = new ArrayList<>();
 }
