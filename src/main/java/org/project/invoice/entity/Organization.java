@@ -21,4 +21,7 @@ public class Organization {
 
     @OneToMany(mappedBy = "organization")
     private List<Customer> customers = new ArrayList<>();
+
+    @OneToMany(mappedBy = "organization")
+    private List<Item> items = new ArrayList<>();
 }
