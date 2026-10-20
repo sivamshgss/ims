@@ -3,6 +3,8 @@ package org.project.invoice.entity;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "items")
@@ -24,4 +26,7 @@ public class Item {
 
     @Column(nullable = false, name = "tax_rate", precision = 5, scale = 2)
     private BigDecimal taxRate;
+
+    @OneToMany(mappedBy = "item")
+    private List<InvoiceItem> invoiceItems = new ArrayList<>();
 }

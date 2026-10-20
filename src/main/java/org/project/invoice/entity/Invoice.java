@@ -5,6 +5,8 @@ import org.project.invoice.enums.PaymentStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "invoices")
@@ -46,4 +48,7 @@ public class Invoice {
     @Enumerated(value = EnumType.STRING)
     @Column(name = "payment_status", nullable = false, length = 20)
     private PaymentStatus paymentStatus;
+
+    @OneToMany(mappedBy = "invoice")
+    private List<InvoiceItem> invoiceItems = new ArrayList<>();
 }
